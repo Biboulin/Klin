@@ -1,0 +1,881 @@
+================================================================================
+                    PROJET: CHORE SHARE (WORKING NAME)
+              Appli de gestion collaborative des tâches ménagères
+================================================================================
+
+VERSION: 1.0 - Specification Produit Complète
+DATE: 19 février 2026
+STATUS: À affiner avec Valentin
+
+================================================================================
+1. EXECUTIVE SUMMARY
+================================================================================
+
+CHORE SHARE est une appli mobile de gestion de tâches ménagères pour:
+- Jeunes couples
+- Colocataires
+- Familles
+
+Concept: "Bring mais pour les tâches ménagères" → Simple, addictive, collaborative
+
+Modèle: FREEMIUM (gratuit limité → Premium sans limite)
+Stack: Expo (React Native) + Node.js/Express + PostgreSQL
+Timeline: MVP en 4-6 semaines
+
+Objectif: 1000 foyers actifs dans les 6 mois
+
+================================================================================
+2. VISION & OBJECTIFS
+================================================================================
+
+VISION:
+"Rendre la vie en colocation/couple moins stressante en clarifiants les tâches
+et responsabilités de chacun, avec transparence et responsabilisation"
+
+OBJECTIFS (OKRs - 6 mois):
+1. Atteindre 1000 foyers actifs
+2. Taux de rétention 40% (1 mois actif)
+3. Conversion freemium → premium: 8-12%
+4. Score NPS: 40+ (durable)
+5. 0 bugs critiques en production
+
+================================================================================
+3. SPEC PRODUIT DÉTAILLÉE
+================================================================================
+
+3.1 PERSONAS
+
+PERSONA #1: Sophie (25 ans, en couple)
+- Pain: "Mon copain ne sait jamais ce qu'il doit faire"
+- Gain: Clarté, pas de conflits
+- Frequency: Quotidienne
+- Use case: Assigner tâches, voir qui a fait quoi
+
+PERSONA #2: Marc (23 ans, coloc)
+- Pain: "Qui doit faire les toilettes cette semaine?"
+- Gain: Pas de disputes, équité
+- Frequency: Quotidienne
+- Use case: Voir ses tâches du jour, cocher quand c'est fait
+
+PERSONA #3: Mère (45 ans, famille)
+- Pain: "Les enfants ne font rien sans rappel"
+- Gain: Autonomie enfants, vue d'ensemble
+- Frequency: Quotidienne
+- Use case: Assigner, rappeler, vérifier photos
+
+================================================================================
+3.2 CORE FEATURES (MVP)
+
+A. CRÉATION DE GROUPE
+├─ Créer un foyer / groupe
+├─ Inviter autres membres (email/lien magique)
+├─ Rôles: Admin, Member, Guest (optionnel)
+├─ Max 10 personnes (plan gratuit), illimité (premium)
+└─ Notifications invitations
+
+B. GESTION DE TÂCHES
+├─ Créer tâche (titre, desc, catégorie, fréquence)
+├─ Catégories: Cuisine, Salle bain, Salon, Chambre, Linge, Autre
+├─ Fréquence: Unique, Quotidien, 2x/semaine, Hebdo, Mensuel
+├─ Assigner à 1 personne
+├─ Priorité: Normal, Urgent
+├─ Durée estimée: 15min, 30min, 1h, 2h, 3h+
+├─ Deadline (date/heure optionnelle)
+└─ Notes (description)
+
+C. STATUTS TÂCHES
+├─ À faire (gris)
+├─ En cours (bleu)
+├─ Fait ✓ (vert) + date/heure complétée
+├─ Reportée (orange)
+└─ Supprimée (transparent)
+
+D. PHOTOS/PREUVES
+├─ Ajouter photo avant/après quand on marque "Fait"
+├─ Optionnel mais encouragé
+├─ Galerie par tâche (historique photos)
+└─ Supprimer photos après 1 mois (storage limité)
+
+E. HISTORIQUE & STATS
+├─ Vue timeline: Toutes les complétions (qui, quand, photo)
+├─ Stats par personne: % tâches complétées, tâches totales
+├─ Semaine actuelle: Vue par jour
+├─ Graphique "Charge de travail" (qui en fait le plus)
+└─ Tendances: Qui procrastine, qui est rapide
+
+F. RAPPELS AUTOMATIQUES
+├─ Notif à assigné: "+1h avant deadline"
+├─ Notif à groupe: "Tâche X pas faite depuis 2h"
+├─ Notif admin: "5 tâches en retard"
+├─ Silencieux après 22h
+└─ Désactivable par personne
+
+G. DISCUSSIONS (BONUS MVP)
+├─ Commentaires sur chaque tâche
+├─ Emoji reactions
+├─ "@mentions" des gens
+└─ Photos inline
+
+================================================================================
+3.3 USER EXPERIENCE
+
+FLOW UTILISATEUR PRINCIPAL (1ère ouverture):
+1. Signup (email + mdp)
+2. Créer ou rejoindre un groupe
+3. Voir tableau de bord
+4. Voir ses tâches du jour
+5. Cliquer une tâche → Détails → "En cours" → Photo → "Fait" ✓
+
+DASHBOARD (Home screen):
+┌─────────────────────────────────┐
+│ CHORE SHARE                     │
+├─────────────────────────────────┤
+│ Groupe: "Notre coloc"  👥 3     │
+├─────────────────────────────────┤
+│ AUJOURD'HUI (2 tâches)          │
+│ ├─ 🔴 [URGENT] Laver toilettes │
+│ │  Assigné à: Sophie            │
+│ │  Deadline: 14:00              │
+│ └─ ✅ Faire courses             │
+│    Fait par Marc à 10:30        │
+├─────────────────────────────────┤
+│ CETTE SEMAINE (8 tâches)        │
+│ ├─ 5 à faire                    │
+│ ├─ 2 en cours                   │
+│ └─ 1 fait                       │
+├─────────────────────────────────┤
+│ STATS                           │
+│ ├─ Sophie: 65% (26/40)          │
+│ ├─ Marc:   45% (18/40)          │
+│ └─ Alice:  72% (29/40)          │
+└─────────────────────────────────┘
+
+TÂCHE DÉTAIL:
+┌─────────────────────────────────┐
+│ Laver la salle de bain          │
+│ [URGENT] 🔴                     │
+├─────────────────────────────────┤
+│ Assigné à: Sophie               │
+│ Deadline: Aujourd'hui 14:00 ⏰  │
+│ Durée: 45 min                   │
+│ Fréquence: Hebdomadaire         │
+├─────────────────────────────────┤
+│ STATUS: À FAIRE → [En cours]    │
+│                → [Fait]         │
+├─────────────────────────────────┤
+│ [📷 Ajouter photo avant]         │
+│ [📷 Ajouter photo après]        │
+├─────────────────────────────────┤
+│ COMMENTAIRES:                   │
+│ ├─ Marc: "Merci Sophie! 👍"     │
+│ └─ Alice: "Impeccable!"         │
+└─────────────────────────────────┘
+
+================================================================================
+3.4 MODÈLE ÉCONOMIQUE
+
+FREEMIUM STRUCTURE:
+
+PLAN GRATUIT (Chore Share Free):
+✓ 1 groupe
+✓ Jusqu'à 4 membres
+✓ Jusqu'à 20 tâches actives
+✓ Historique 30 jours
+✓ Rappels (5/jour max)
+✓ Photos (50 MB/mois)
+✓ Stats basiques
+✗ Pas de répétitions illimitées
+✗ Pas de commentaires
+✗ Analytics avancées
+
+PLAN PREMIUM (Chore Share+):
+Prix: €3.99/mois ou €29.99/an (-37%)
+✓ Tout du plan gratuit +
+✓ Groupes illimités
+✓ 50+ membres par groupe
+✓ Tâches illimitées
+✓ Historique 1 an
+✓ Rappels illimités
+✓ Photos illimitées (500 MB/mois)
+✓ Commentaires illimités
+✓ Analytics avancées
+✓ Export PDF/CSV
+✓ Partage rapport familial
+✓ Intégrations futures (Slack, Google Calendar)
+
+REVENUE MODEL:
+- 70% des utilisateurs: Gratuit
+- 8-12% conversion: Premium
+- ARPU (Annual Revenue Per User): €3/an/utilisateur free → €36/an/utilisateur premium
+- Breakeven: 500 users (200 premium)
+- Target 6m: 1000 foyers = ~120 premium = €4,320/an
+
+STRATÉGIE PRICING:
+1. Lancer gratuit (traction)
+2. Offrir Premium après 2 semaines d'usage (onboarding complet)
+3. Promo: "Essai 14j gratuit si tu invites 2 amis"
+
+================================================================================
+4. ARCHITECTURE TECHNIQUE
+================================================================================
+
+4.1 STACK
+
+Frontend: React Native (Expo)
+- Expo 51+
+- React Navigation (tabs + stack)
+- Redux Toolkit (state management)
+- Axios (API calls)
+- React Query (caching)
+
+Backend: Node.js + Express
+- Express.js
+- PostgreSQL (DB)
+- Prisma ORM
+- JWT Auth
+- Bcrypt (passwords)
+- Multer (file uploads)
+- Firebase Cloud Messaging (push notifs)
+
+Infrastructure:
+- Hosting: Railway ou Heroku (backend)
+- Database: Railway PostgreSQL ou Supabase
+- Storage: AWS S3 ou Cloudinary (photos)
+- Auth: JWT + Refresh tokens
+- Monitoring: Sentry
+
+4.2 DATABASE SCHEMA (SIMPLIFIÉ)
+
+users
+├─ id (UUID)
+├─ email (unique)
+├─ password_hash
+├─ first_name
+├─ avatar_url
+├─ created_at
+
+groups
+├─ id (UUID)
+├─ name
+├─ owner_id (FK users)
+├─ created_at
+├─ member_count
+
+group_members
+├─ id (UUID)
+├─ group_id (FK)
+├─ user_id (FK)
+├─ role (admin, member, guest)
+├─ joined_at
+
+tasks
+├─ id (UUID)
+├─ group_id (FK)
+├─ title
+├─ description
+├─ category (enum: cuisine, bain, salon, etc)
+├─ frequency (unique, daily, weekly, monthly)
+├─ assigned_to (FK users)
+├─ priority (normal, urgent)
+├─ estimated_duration (15m, 30m, 1h, etc)
+├─ deadline (optional)
+├─ created_by (FK users)
+├─ created_at
+├─ deleted_at (soft delete)
+
+task_completions
+├─ id (UUID)
+├─ task_id (FK)
+├─ completed_by (FK users)
+├─ status (in_progress, completed)
+├─ completed_at
+├─ photos (array of URLs)
+
+comments
+├─ id (UUID)
+├─ task_id (FK)
+├─ user_id (FK)
+├─ text
+├─ created_at
+├─ emoji_reactions (JSON)
+
+4.3 API ENDPOINTS (MVP)
+
+AUTH:
+POST /auth/signup
+POST /auth/login
+POST /auth/logout
+POST /auth/refresh-token
+
+GROUPS:
+POST /groups (créer)
+GET /groups (list mes groupes)
+GET /groups/:id (détail)
+POST /groups/:id/members (inviter)
+DELETE /groups/:id/members/:userId (remove)
+
+TASKS:
+POST /groups/:id/tasks (créer)
+GET /groups/:id/tasks (list)
+GET /tasks/:id (détail)
+PATCH /tasks/:id (update)
+DELETE /tasks/:id (soft delete)
+POST /tasks/:id/mark-complete (marquer fait)
+POST /tasks/:id/add-photo (upload photo)
+GET /tasks/:id/photos (liste photos)
+
+HISTORY:
+GET /groups/:id/history (timeline)
+GET /groups/:id/stats (stats utilisateurs)
+
+NOTIFICATIONS:
+POST /notifications/subscribe (FCM token)
+GET /notifications (list)
+
+================================================================================
+5. USER STORIES (INVEST FORMAT)
+================================================================================
+
+EPIC 1: AUTHENTICATION & ONBOARDING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+US-001: [Auth] Créer un compte
+As a: Nouvel utilisateur
+I want to: M'inscrire avec email + mot de passe
+So that: Je peux accéder à l'appli
+
+AC:
+├─ Écran signup avec email, password, confirm password
+├─ Validation email (format + pas de doublons)
+├─ Password min 8 chars, 1 maj, 1 chiffre
+├─ Bouton "Créer compte" → hash mdp → JWT créé
+├─ Mail de confirmation optionnel
+└─ Redirect vers "Créer groupe" si 1ère fois
+
+US-002: [Auth] Se connecter
+As a: Utilisateur existant
+I want to: Me connecter avec email/password
+So that: Je peux voir mes groupes
+
+AC:
+├─ Email + password
+├─ Si wrong → erreur "Email ou mot de passe incorrect"
+├─ Si correct → JWT token + refresh token sauvegardés
+├─ Redirect dashboard
+└─ "Se souvenir de moi" (sauvegarde local 30j)
+
+US-003: [Onboarding] Créer un groupe
+As a: Nouvel utilisateur
+I want to: Créer un groupe (coloc/couple/famille)
+So that: Je peux ajouter ma communauté
+
+AC:
+├─ Écran: "Nom du groupe?" (input text)
+├─ Exemples auto: "Notre coloc", "Maison", "Family"
+├─ Groupe créé → user devient ADMIN
+├─ Invite link généré (unique URL)
+├─ Can share via SMS/WhatsApp/Email
+└─ Redirect dashboard (groupe vide au départ)
+
+US-004: [Onboarding] Rejoindre un groupe
+As a: Utilisateur invité
+I want to: Rejoindre un groupe via lien
+So that: Je fais partie de la communauté
+
+AC:
+├─ Reçois lien magique (chore-share.app/invite/ABC123)
+├─ Clique → Demande confirmation "Rejoindre 'Notre coloc'?"
+├─ Si user déjà inscrit → Direct + notif admin
+├─ Si user nouveau → Signup d'abord → auto-join
+└─ Apparaît dans liste members (rôle: member par défaut)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EPIC 2: GESTION DES TÂCHES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+US-005: [Tasks] Créer une tâche
+As a: Admin du groupe
+I want to: Créer une tâche (laver toilettes, faire courses, etc)
+So that: Les autres savent ce qu'ils doivent faire
+
+AC:
+├─ Form: Titre, description, catégorie, fréquence, assigné, priorité, durée
+├─ Catégories: dropdown (Cuisine, Salle bain, Salon, Chambre, Linge, Autre)
+├─ Fréquence: Unique, Quotidien, 2x/semaine, Hebdo, Mensuel
+├─ Assigné: dropdown (list members)
+├─ Priorité: Normal / Urgent (radio)
+├─ Durée: 15min / 30min / 1h / 2h / 3h+
+├─ Deadline: date picker (optional)
+├─ Bouton "Créer" → Save → Notif assigné
+└─ List tâches refresh
+
+US-006: [Tasks] Voir mes tâches du jour
+As a: Member
+I want to: Voir les tâches qu'on m'a assigné aujourd'hui
+So that: Je sais quoi faire
+
+AC:
+├─ Dashboard: Section "AUJOURD'HUI (X tâches)"
+├─ Affiche tâches du jour pour moi uniquement
+├─ Tri par: Priorité (urgent d'abord), puis deadline
+├─ Chaque tâche: titre, assigné, deadline, priorité badge
+├─ Clique tâche → Détail view
+└─ Si zéro tâche: "Yay! Aucune tâche pour toi 🎉"
+
+US-007: [Tasks] Voir toutes les tâches du groupe
+As a: Member
+I want to: Voir TOUTES les tâches (pas juste les miennes)
+So that: Je suis au courant de ce que les autres font
+
+AC:
+├─ Tab "Tâches" dans bottom nav
+├─ Affiche toutes les tâches actives (ordre: deadline)
+├─ Filter par: Statut (À faire, En cours, Fait), Assigné, Catégorie
+├─ Chaque ligne: Titre | Assigné | Status | Deadline
+├─ Clique → Détail
+└─ Swipe down → Refresh
+
+US-008: [Tasks] Marquer une tâche comme "En cours"
+As a: Member assigné
+I want to: Cliquer "En cours" pour notifier le groupe
+So that: Tout le monde sait que je suis dessus
+
+AC:
+├─ Detail view de tâche
+├─ Bouton "En cours" (bleu)
+├─ Status change: "À faire" → "En cours"
+├─ Timestamp visible (15:34)
+├─ Group reçoit notif: "Marc a commencé 'Laver toilettes'"
+└─ List se refresh
+
+US-009: [Tasks] Marquer une tâche comme "Fait" + photo
+As a: Member assigné
+I want to: Cliquer "Fait" + optionnellement ajouter photo
+So that: Tout le monde voit que j'ai fini + preuve visuelle
+
+AC:
+├─ Detail view, button "Fait ✓" (vert)
+├─ Avant de valider: Prompt "Ajouter photo? (optionnel)"
+├─ Si oui: Camera picker (phone camera / gallery)
+├─ Photo preview + upload
+├─ Si non: Passer direct à "Fait"
+├─ Completion timestamp + photo sauvegardés
+├─ Group reçoit notif: "Marc a fini 'Laver toilettes' ✓"
+└─ Tâche disparaît de "À faire" → Apparaît dans historique
+
+US-010: [Tasks] Reporter une tâche
+As a: Member
+I want to: Dire "Je peux pas le faire aujourd'hui"
+So that: Je report deadline sans la supprimer
+
+AC:
+├─ Detail view, button "Reporter"
+├─ Date picker: "Reporter à quelle date?"
+├─ New deadline set
+├─ Admin + assigné reçoivent notif
+└─ Tâche reste en "À faire" avec new deadline
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EPIC 3: HISTORIQUE & STATS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+US-011: [History] Voir l'historique du groupe
+As a: Member
+I want to: Voir une timeline de "qui a fait quoi et quand"
+So that: Je comprends la contribution de chacun
+
+AC:
+├─ Tab "Historique" (timeline view)
+├─ Affiche toutes les complétions triées par date DESC
+├─ Format: "[15:34] Marc a fini 'Laver toilettes' ✓ 📷"
+├─ Clique sur ligne → See photo(s) + comments
+├─ Filter par: Utilisateur, Catégorie, Date range
+├─ Pull down → Load older entries
+└─ Search: "Laver" → filtre tâches contenant ce mot
+
+US-012: [Stats] Voir les stats du groupe
+As a: Member
+I want to: Voir "Qui en fait le plus" / % complétions
+So that: Je vois la contribution de chacun (gamification)
+
+AC:
+├─ Tab "Stats" (card view)
+├─ Leaderboard: "Contribution cette semaine"
+│  ├─ 1. Alice: 72% (29/40) + Avatar + Badge "🏆"
+│  ├─ 2. Sophie: 65% (26/40) + Avatar
+│  └─ 3. Marc: 45% (18/40) + Avatar
+├─ Graphique: Bar chart "Tâches par personne (cette semaine)"
+├─ Stats personnes: "Temps moyen de completion" (30min pour Sophie)
+├─ Durée moyenne groupe: "Tâche prend en moyenne 45min"
+└─ Tendances: "Marc a complété 85% en moins de 24h (vs 50% pour Alice)"
+
+US-013: [Stats] Voir mes stats personnelles
+As a: Member
+I want to: Voir MES propres stats (vs groupe)
+So that: Je me compare au groupe / vois mes tendances
+
+AC:
+├─ Tab "Mon profil" → Section "Mes stats"
+├─ "Cette semaine: 8/10 tâches (80%)"
+├─ Temps moyen: 35min
+├─ Tâche préférée: Faire courses (5 fois)
+├─ Tâche la plus rapide: Ranger (10min avg)
+├─ Tâche la plus lente: Laver salle bain (1h avg)
+├─ Tableau "Complétions jour par jour"
+└─ Export PDF (Premium feature)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+EPIC 4: NOTIFICATIONS & RAPPELS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+US-014: [Notif] Recevoir rappel avant deadline
+As a: Member
+I want to: Recevoir une notif "+1h avant" ma deadline
+So that: Je n'oublie pas
+
+AC:
+├─ Tâche créée avec deadline 14:00
+├─ À 13:00 → Push notif: "⏰ Rappel: 'Laver toilettes' dans 1h"
+├─ Clique notif → Jump à detail view de tâche
+├─ Dans settings: Toggle rappels (on/off par défaut: ON)
+├─ Heures silencieuses: 22:00-08:00 (pas de notif)
+└─ Option "Snooze 30min" si clique sur notif
+
+US-015: [Notif] Recevoir notif quand tâche assignée
+As a: Member
+I want to: Être notifié quand quelqu'un m'assigne une tâche
+So that: Je sais vite que j'ai du nouveau
+
+AC:
+├─ Admin crée tâche assigné à moi
+├─ Push notif immédiate: "Sophie t'a assigné: 'Faire courses'"
+├─ Clique → Detail view
+├─ Notification en-app + push enabled par défaut
+└─ Désactivable dans settings
+
+US-016: [Notif] Recevoir notif groupe si tâche en retard
+As a: Group members
+I want to: Être notifié si quelqu'un ne finish pas sa tâche à deadline
+So that: On peut aider ou relancer
+
+AC:
+├─ Tâche deadline 14:00, pas encore faite à 14:30
+├─ Notif groupe: "⚠️ 'Laver toilettes' pas faite depuis 30min (assigné à Marc)"
+├─ Clique → Detail view
+├─ Admin peut voir "Tâches en retard" dashboard
+└─ 2ème notif après 2h en retard, puis 3x par jour max
+
+================================================================================
+6. ROADMAP
+================================================================================
+
+PHASE 1: MVP (4-6 semaines) — PRIORITÉ 1
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Semaine 1-2: Setup + Auth + Base structure
+□ Expo project init
+□ Navigation setup (Tabs + Stack)
+□ Auth (signup, login, JWT)
+□ Database schema + API setup
+
+Semaine 2-3: Core features
+□ Group creation + invites (magic link)
+□ Task CRUD (créer, edit, delete)
+□ Task status management (à faire → en cours → fait)
+□ Basic dashboard
+
+Semaine 3-4: UX Polish + Notifications
+□ Photo upload (complet)
+□ Push notifications (FCM)
+□ Historique basique
+□ Stats basiques
+
+Semaine 4-5: Testing + Bug fixes
+□ E2E tests (auth, task creation)
+□ Device testing (iOS + Android)
+□ Bug fixes
+□ Performance optimization
+
+Semaine 5-6: Launch prep
+□ App Store + Play Store submission
+□ Marketing website simple
+□ Beta group (friends + family)
+□ Final docs + support setup
+
+MVP FEATURES:
+✅ Auth (signup, login)
+✅ Groups (create, invite, members)
+✅ Tasks (CRUD, assign, status, frequency)
+✅ Photos (basic upload + gallery)
+✅ Historique simple (timeline)
+✅ Stats simples (% completion)
+✅ Rappels (deadline -1h)
+✅ Notifications (basic push)
+✅ Freemium (limits on free plan)
+✗ Comments (V1.1)
+✗ Analytics avancées (V2)
+✗ Intégrations (V2)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PHASE 2: V1.1 (4 semaines après MVP) — NICE TO HAVE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+□ Comments + reactions sur tâches
+□ Search & filter avancés
+□ Themes (light/dark mode)
+□ Export stats (PDF)
+□ Recurring tasks (auto-create next week)
+□ Badges & achievements (gamification)
+□ Profile customization
+□ Social sharing ("Fais comment je fais tâches ✓")
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PHASE 3: V2 (3 mois après MVP) — EXPANSION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+□ Multi-language support (EN, FR, ES, DE)
+□ Web version (React)
+□ Google Calendar integration
+□ Slack integration (send reminders in Slack)
+□ Smart scheduling (AI suggest best days/times)
+□ Family mode (kid-friendly)
+□ Chore swap (trading tâches entre users)
+□ Payment processing (Stripe integration)
+□ Advanced analytics (heatmaps, trends)
+□ Admin dashboard (manage multiple groups)
+
+================================================================================
+7. GO-TO-MARKET STRATEGY
+================================================================================
+
+PHASE 1: SEEDING (Weeks 1-4 après launch)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TARGET: 100 beta users (friends, family, online communities)
+
+CHANNELS:
+1. Personal network (Valentin's friends + family)
+   - Direct outreach: "Hey, beta test mon appli?"
+   - Goal: 30-50 users
+   - Format: Direct link + discord channel pour feedback
+
+2. Reddit communities
+   - r/Colocation (FR)
+   - r/Relationships (couples)
+   - r/Parenting (families)
+   - Post: "We built Chore Share (like Bring for chores), free beta"
+   - Goal: 20-30 users
+
+3. Facebook groups (Français)
+   - "Jeunes couples"
+   - "Coloc Paris/Lyon/Marseille"
+   - "Étudiants 2026"
+   - Goal: 20-30 users
+
+4. Product Hunt
+   - Launch on PH Day 1
+   - Get on front page
+   - Goal: 500+ signups
+
+5. Indie Hackers + Twitter
+   - Share behind-the-scenes (dev journey)
+   - Engage with similar app creators
+   - Goal: 50+ signups + network
+
+MESSAGING:
+"Bring for chores" + "End roommate conflicts"
+→ "Finally, a clear way to manage who does what at home"
+
+SUCCESS METRICS (Phase 1):
+- 100+ active users
+- 5+ groups created
+- 50%+ retention (1 week)
+- NPS 30+ (passable)
+- <3% churned
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PHASE 2: GROWTH (Months 2-3)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TARGET: 1000 active foyers
+
+TACTICS:
+1. Referral program
+   - "Invite a friend → Both get +3 tasks free"
+   - Code: REFER10 → 10% discount Premium 1 month
+   - Viral coefficient: Target 1.5x (1 user invites 1.5 friends)
+
+2. Content marketing
+   - Blog: "How to split chores fairly"
+   - Blog: "Best apps for shared housing"
+   - SEO: Long-tail keywords ("chore app for couples", "roommate task manager")
+   - Goal: 500+ organic monthly by month 3
+
+3. Partnerships
+   - Student housing companies (Lia, Staying, etc)
+   - Lease your brand partnerships
+   - Goal: Embed Chore Share in onboarding
+
+4. Paid acquisition (if profitable)
+   - Facebook ads (target: 25-34, shared housing)
+   - Budget: $500/month
+   - CAC target: $2, LTV $36/year = 18:1 ratio ✓
+
+5. Community building
+   - Discord server ("Chore Share Community")
+   - Weekly tips ("Chore of the week")
+   - User testimonials on landing page
+
+SUCCESS METRICS (Phase 2):
+- 1000+ active foyers
+- 120+ premium subscribers
+- 8-10% conversion rate
+- Retention 35%+ (1 month)
+- NPS 45+
+- MRR $3,000-4,000 (revenue)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+PHASE 3: SCALE (Months 4-6)
+━━━━━━━━━━━━━━━━━━━━━━━━━
+
+TARGET: 5000+ active foyers
+
+TACTICS:
+1. International expansion
+   - Translate to EN, ES, DE
+   - Launch in UK, Germany, Spain markets
+   - Adapt pricing by country
+
+2. Integration partnerships
+   - Google Calendar
+   - Slack
+   - Microsoft Teams
+   - Apple Reminders
+
+3. Press coverage
+   - Reach out to tech blogs
+   - "How we built Chore Share in 6 weeks"
+   - Aim for 10-20 features
+
+4. Paid ads at scale
+   - Budget: $2,000/month
+   - Test creatives (video, carousels)
+   - Optimize for 18:1 LTV:CAC
+
+5. Word of mouth
+   - Keep NPS >50
+   - Referral loop working
+   - 30% of new users from referrals
+
+================================================================================
+8. COMPETITIVE ANALYSIS
+================================================================================
+
+BRING (Best comparison):
+✓ Ultra-simple, addictive UX
+✓ Freemium model works
+✗ No photos, limited to shopping
+→ We add: Photos + history + gamification + tâches ménagères
+
+COZI (Family organizer):
+✓ Multi-purpose (calendar + chores + notes)
+✗ Cluttered, complex UX
+✗ Premium price ($40/year) expensive
+→ We: Simple + focus only on chores + cheaper
+
+TODY (Smart home cleaning):
+✓ AI scheduling
+✗ No family collaboration
+✗ Expensive ($40/year)
+→ We: Social collaboration > AI
+
+OUR ADVANTAGE:
+1. **Focused** (only chores, not calendar/shopping)
+2. **Social** (group gamification, comparisons)
+3. **Visual** (photos = proof + fun)
+4. **Affordable** (Freemium, €3.99/month premium)
+5. **Community** (built for modern living situations)
+
+================================================================================
+9. RISQUES & MITIGATION
+================================================================================
+
+RISK 1: User retention (people stop using after 2 weeks)
+IMPACT: High
+MITIGATION:
+- Nail onboarding (magic link invites)
+- Gamification (leaderboard, badges)
+- Notifications (remind people)
+- Social loop (visible contributions)
+
+RISK 2: Churn if group breaks up (colocs move out)
+IMPACT: High
+MITIGATION:
+- Archive groups (not delete)
+- Easy to create new groups
+- Family mode (multi-year use)
+
+RISK 3: Competitors copy (Bring launches "Chore Bring"?)
+IMPACT: Medium
+MITIGATION:
+- Build community first (network effect)
+- Add integrations early (Slack, Calendar)
+- Keep shipping fast
+
+RISK 4: Monetization weak (8% conversion not enough)
+IMPACT: Medium
+MITIGATION:
+- Test "Premium" positioning
+- Offer "Team plan" (cheaper for groups)
+- B2B2C: Student housing partnerships
+
+RISK 5: Technical scaling (database performance)
+IMPACT: Low (early stage)
+MITIGATION:
+- PostgreSQL (not MongoDB) for relational data
+- Caching (Redis) for dashboard
+- CDN for photos (Cloudinary)
+
+================================================================================
+10. SUCCESS CRITERIA (3 mois)
+================================================================================
+
+NORTH STAR METRIC:
+"Active foyers per month" (with 2+ tasks completed)
+
+TARGET:
+- 500 foyers by month 1
+- 1000 foyers by month 3
+- 5000 foyers by month 6
+
+SUPPORTING METRICS:
+- Retention (1-week): >50%
+- Retention (4-week): >35%
+- Conversion (free → premium): 8-12%
+- NPS: >40
+- MAU (Monthly Active Users): 3000+
+- Task completion rate: 70%+
+- Avg group size: 2.5 people
+- MRR: $3000+ by month 3
+
+================================================================================
+FIN DE SPEC PRODUIT
+================================================================================
+
+PROCHAINES ÉTAPES:
+1. Valentin review + feedback
+2. Affiner personas / user stories
+3. Design mockups (Figma)
+4. Dev start (backend first)
+5. Beta testing
+
+Questions? Clarifie tes prio et on lance!
+
+================================================================================
