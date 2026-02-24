@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, Text, ViewStyle, TextStyle, ActivityIndicator } from 'react-native';
-import { Colors, TextStyles } from '../constants';
+import { Colors } from '../constants';
 
 interface ButtonProps {
   onPress: () => void;
@@ -42,7 +42,7 @@ export const Button: React.FC<ButtonProps> = ({
 
   const sizeStyles = {
     sm: {
-      paddingVertical: 8,
+      paddingVertical: 10,
       paddingHorizontal: 12,
     },
     md: {
@@ -50,8 +50,8 @@ export const Button: React.FC<ButtonProps> = ({
       paddingHorizontal: 16,
     },
     lg: {
-      paddingVertical: 16,
-      paddingHorizontal: 20,
+      paddingVertical: 14,
+      paddingHorizontal: 16,
     },
   };
 
@@ -59,6 +59,12 @@ export const Button: React.FC<ButtonProps> = ({
     primary: Colors.white,
     secondary: Colors.text,
     danger: Colors.white,
+  };
+
+  const textSizes = {
+    sm: 14,
+    md: 14,
+    lg: 16,
   };
 
   return (
@@ -72,17 +78,20 @@ export const Button: React.FC<ButtonProps> = ({
         disabled && styles.disabled,
         style,
       ]}
-      activeOpacity={0.8}
+      activeOpacity={0.7}
     >
       {loading ? (
-        <ActivityIndicator color={textColor[variant]} />
+        <ActivityIndicator color={textColor[variant]} size="small" />
       ) : (
         <>
           {icon && icon}
           <Text
             style={[
-              TextStyles.button,
-              { color: textColor[variant] },
+              {
+                color: textColor[variant],
+                fontSize: textSizes[size],
+                fontWeight: '600',
+              },
               textStyle,
             ]}
           >
@@ -102,6 +111,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     gap: 8,
+    minHeight: 48,
   },
   disabled: {
     opacity: 0.5,

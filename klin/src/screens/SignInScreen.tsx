@@ -25,11 +25,11 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ onSuccess, onToggleM
 
   const handleSignIn = async () => {
     if (!email.trim()) {
-      Alert.alert('Error', 'Please enter your email');
+      Alert.alert('Erreur', 'Veuillez entrer votre email');
       return;
     }
     if (!password) {
-      Alert.alert('Error', 'Please enter your password');
+      Alert.alert('Erreur', 'Veuillez entrer votre mot de passe');
       return;
     }
 
@@ -37,7 +37,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ onSuccess, onToggleM
       await signIn(email, password);
       onSuccess?.();
     } catch (err) {
-      Alert.alert('Sign In Failed', error || 'Please try again');
+      Alert.alert('Erreur', error || 'Veuillez réessayer');
     }
   };
 
@@ -45,9 +45,14 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ onSuccess, onToggleM
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
+      keyboardVerticalOffset={10}
     >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
+      <ScrollView 
+        contentContainerStyle={styles.scrollContent}
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Compact Header */}
         <View style={styles.header}>
           <Text style={styles.title}>Se connecter</Text>
           <Text style={styles.subtitle}>Bienvenue sur Klin</Text>
@@ -73,6 +78,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ onSuccess, onToggleM
               editable={!loading}
               keyboardType="email-address"
               autoCapitalize="none"
+              autoCorrect={false}
               placeholderTextColor={Colors.darkGray}
             />
           </View>
@@ -104,7 +110,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ onSuccess, onToggleM
 
         {/* Toggle to Sign Up */}
         <View style={styles.toggleBox}>
-          <Text style={styles.toggleText}>Pas encore de compte? </Text>
+          <Text style={styles.toggleText}>Pas de compte? </Text>
           <Text
             style={[styles.toggleText, styles.toggleLink]}
             onPress={onToggleMode}
@@ -124,62 +130,71 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    padding: 20,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 24,
     justifyContent: 'center',
   },
   header: {
-    marginBottom: 32,
+    marginBottom: 16,
   },
   title: {
-    ...TextStyles.h2,
+    fontSize: 28,
+    fontWeight: '700',
     color: Colors.text,
-    marginBottom: 8,
+    marginBottom: 4,
   },
   subtitle: {
-    ...TextStyles.body,
+    fontSize: 14,
+    fontWeight: '400',
     color: Colors.textSecondary,
   },
   errorBox: {
     backgroundColor: Colors.danger,
     borderRadius: 8,
     padding: 12,
-    marginBottom: 20,
+    marginBottom: 16,
   },
   errorText: {
-    ...TextStyles.bodySmall,
+    fontSize: 13,
+    fontWeight: '400',
     color: Colors.white,
   },
   form: {
-    marginBottom: 24,
+    marginBottom: 20,
+    gap: 12,
   },
   inputGroup: {
-    marginBottom: 16,
+    gap: 6,
   },
   label: {
-    ...TextStyles.label,
+    fontSize: 13,
+    fontWeight: '500',
     color: Colors.text,
-    marginBottom: 8,
   },
   input: {
-    ...TextStyles.body,
+    fontSize: 16,
     backgroundColor: Colors.white,
     borderColor: Colors.border,
     borderWidth: 1,
     borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
     color: Colors.text,
+    minHeight: 48,
   },
   button: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
   toggleBox: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    gap: 4,
   },
   toggleText: {
-    ...TextStyles.bodySmall,
+    fontSize: 14,
+    fontWeight: '400',
     color: Colors.textSecondary,
   },
   toggleLink: {

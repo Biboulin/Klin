@@ -8,10 +8,13 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  Dimensions,
 } from 'react-native';
 import { useAuthContext } from '../context/AuthContext';
 import { Button } from '../components/Button';
 import { Colors, TextStyles } from '../constants';
+
+const { height: screenHeight } = Dimensions.get('window');
 
 interface SignUpScreenProps {
   onSuccess?: () => void;
@@ -27,19 +30,19 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSuccess, onToggleM
 
   const handleSignUp = async () => {
     if (!name.trim()) {
-      Alert.alert('Error', 'Please enter your name');
+      Alert.alert('Erreur', 'Veuillez entrer votre nom');
       return;
     }
     if (!email.trim()) {
-      Alert.alert('Error', 'Please enter your email');
+      Alert.alert('Erreur', 'Veuillez entrer votre email');
       return;
     }
     if (password.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters');
+      Alert.alert('Erreur', 'Le mot de passe doit faire au moins 6 caractères');
       return;
     }
     if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
+      Alert.alert('Erreur', 'Les mots de passe ne correspondent pas');
       return;
     }
 
@@ -47,7 +50,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSuccess, onToggleM
       await signUp(email, password, name);
       onSuccess?.();
     } catch (err) {
-      Alert.alert('Sign Up Failed', error || 'Please try again');
+      Alert.alert('Erreur', error || 'Veuillez réessayer');
     }
   };
 
@@ -55,9 +58,14 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSuccess, onToggleM
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
+      keyboardVerticalOffset={10}
     >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Header */}
+      <ScrollView 
+        contentContainerStyle={styles.scrollContent}
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Compact Header */}
         <View style={styles.header}>
           <Text style={styles.title}>Créer un compte</Text>
           <Text style={styles.subtitle}>Bienvenue sur Klin</Text>
@@ -82,6 +90,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSuccess, onToggleM
               onChangeText={setName}
               editable={!loading}
               placeholderTextColor={Colors.darkGray}
+              autoCapitalize="words"
             />
           </View>
 
@@ -96,6 +105,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSuccess, onToggleM
               editable={!loading}
               keyboardType="email-address"
               autoCapitalize="none"
+              autoCorrect={false}
               placeholderTextColor={Colors.darkGray}
             />
           </View>
@@ -116,7 +126,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSuccess, onToggleM
 
           {/* Confirm Password Input */}
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Confirmer mot de passe</Text>
+            <Text style={styles.label}>Confirmer</Text>
             <TextInput
               style={styles.input}
               placeholder="Confirmer le mot de passe"
@@ -141,7 +151,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSuccess, onToggleM
 
         {/* Toggle to Sign In */}
         <View style={styles.toggleBox}>
-          <Text style={styles.toggleText}>Vous avez déjà un compte? </Text>
+          <Text style={styles.toggleText}>Vous avez un compte? </Text>
           <Text
             style={[styles.toggleText, styles.toggleLink]}
             onPress={onToggleMode}
@@ -161,62 +171,71 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    padding: 20,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 24,
     justifyContent: 'center',
   },
   header: {
-    marginBottom: 32,
+    marginBottom: 16,
   },
   title: {
-    ...TextStyles.h2,
+    fontSize: 28,
+    fontWeight: '700',
     color: Colors.text,
-    marginBottom: 8,
+    marginBottom: 4,
   },
   subtitle: {
-    ...TextStyles.body,
+    fontSize: 14,
+    fontWeight: '400',
     color: Colors.textSecondary,
   },
   errorBox: {
     backgroundColor: Colors.danger,
     borderRadius: 8,
     padding: 12,
-    marginBottom: 20,
+    marginBottom: 16,
   },
   errorText: {
-    ...TextStyles.bodySmall,
+    fontSize: 13,
+    fontWeight: '400',
     color: Colors.white,
   },
   form: {
-    marginBottom: 24,
+    marginBottom: 20,
+    gap: 12,
   },
   inputGroup: {
-    marginBottom: 16,
+    gap: 6,
   },
   label: {
-    ...TextStyles.label,
+    fontSize: 13,
+    fontWeight: '500',
     color: Colors.text,
-    marginBottom: 8,
   },
   input: {
-    ...TextStyles.body,
+    fontSize: 16,
     backgroundColor: Colors.white,
     borderColor: Colors.border,
     borderWidth: 1,
     borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
     color: Colors.text,
+    minHeight: 48,
   },
   button: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
   toggleBox: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
+    gap: 4,
   },
   toggleText: {
-    ...TextStyles.bodySmall,
+    fontSize: 14,
+    fontWeight: '400',
     color: Colors.textSecondary,
   },
   toggleLink: {

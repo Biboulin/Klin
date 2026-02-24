@@ -8,10 +8,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
-  ActivityIndicator,
 } from 'react-native';
 import { Button } from '../components/Button';
-import { Colors, TextStyles } from '../constants';
+import { Colors } from '../constants';
 
 type OnboardingMode = 'choice' | 'create' | 'join';
 
@@ -32,25 +31,25 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
 
   const handleCreate = async () => {
     if (!householdName.trim()) {
-      Alert.alert('Error', 'Please enter a household name');
+      Alert.alert('Erreur', 'Veuillez entrer un nom de foyer');
       return;
     }
     try {
       await onCreateHousehold(householdName);
     } catch (err) {
-      Alert.alert('Error', 'Failed to create household');
+      Alert.alert('Erreur', 'Impossible de créer le foyer');
     }
   };
 
   const handleJoin = async () => {
     if (!inviteCode.trim()) {
-      Alert.alert('Error', 'Please enter an invite code');
+      Alert.alert('Erreur', 'Veuillez entrer un code d\'invitation');
       return;
     }
     try {
       await onJoinHousehold(inviteCode);
     } catch (err) {
-      Alert.alert('Error', 'Invalid invite code');
+      Alert.alert('Erreur', 'Code invalide');
     }
   };
 
@@ -60,13 +59,15 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
       >
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          {/* Header */}
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent}
+          bounces={false}
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Compact Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>Bienvenue sur Klin!</Text>
-            <Text style={styles.subtitle}>
-              Gérez vos tâches ménagères en famille
-            </Text>
+            <Text style={styles.title}>Bienvenue!</Text>
+            <Text style={styles.subtitle}>Gérez vos tâches ménagères</Text>
           </View>
 
           {/* Choice Buttons */}
@@ -75,7 +76,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
               <Text style={styles.choiceEmoji}>🏠</Text>
               <Text style={styles.choiceTitle}>Créer un foyer</Text>
               <Text style={styles.choiceDescription}>
-                Lancez un nouveau ménage et invitez vos colocataires
+                Lancez un nouveau ménage
               </Text>
               <Button
                 title="Créer"
@@ -90,7 +91,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
               <Text style={styles.choiceEmoji}>➕</Text>
               <Text style={styles.choiceTitle}>Rejoindre</Text>
               <Text style={styles.choiceDescription}>
-                Rejoignez un foyer existant via un lien d'invitation
+                Rejoignez un foyer existant
               </Text>
               <Button
                 title="Rejoindre"
@@ -111,14 +112,17 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
+        keyboardVerticalOffset={10}
       >
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent}
+          bounces={false}
+          showsVerticalScrollIndicator={false}
+        >
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.title}>Créer un foyer</Text>
-            <Text style={styles.subtitle}>
-              Donnez un nom à votre ménage
-            </Text>
+            <Text style={styles.subtitle}>Donnez un nom à votre ménage</Text>
           </View>
 
           {/* Form */}
@@ -127,7 +131,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
               <Text style={styles.label}>Nom du foyer</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Ex: Appartement 42, Maison de campagne"
+                placeholder="Ex: Appart 42"
                 value={householdName}
                 onChangeText={setHouseholdName}
                 editable={!loading}
@@ -165,14 +169,17 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
+        keyboardVerticalOffset={10}
       >
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        <ScrollView 
+          contentContainerStyle={styles.scrollContent}
+          bounces={false}
+          showsVerticalScrollIndicator={false}
+        >
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.title}>Rejoindre un foyer</Text>
-            <Text style={styles.subtitle}>
-              Scannez le code QR ou collez le lien d'invitation
-            </Text>
+            <Text style={styles.subtitle}>Entrez le code d'invitation</Text>
           </View>
 
           {/* Form */}
@@ -181,17 +188,18 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
               <Text style={styles.label}>Code d'invitation</Text>
               <TextInput
                 style={styles.input}
-                placeholder="Entrez le code ou le lien"
+                placeholder="Entrez le code"
                 value={inviteCode}
                 onChangeText={setInviteCode}
                 editable={!loading}
                 placeholderTextColor={Colors.darkGray}
+                autoCapitalize="characters"
               />
             </View>
 
             <View style={styles.scanHint}>
               <Text style={styles.scanHintText}>
-                📱 Vous pouvez aussi scannez le code QR dans les paramètres
+                📱 Vous pouvez aussi scannez le code QR
               </Text>
             </View>
           </View>
@@ -230,83 +238,92 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    padding: 20,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 24,
     justifyContent: 'center',
   },
   header: {
-    marginBottom: 32,
+    marginBottom: 20,
   },
   title: {
-    ...TextStyles.h2,
+    fontSize: 28,
+    fontWeight: '700',
     color: Colors.text,
-    marginBottom: 8,
+    marginBottom: 4,
   },
   subtitle: {
-    ...TextStyles.body,
+    fontSize: 14,
+    fontWeight: '400',
     color: Colors.textSecondary,
   },
   choiceContainer: {
-    gap: 16,
+    gap: 12,
   },
   choiceBox: {
     backgroundColor: Colors.white,
     borderRadius: 12,
-    padding: 20,
+    padding: 14,
     alignItems: 'center',
     borderWidth: 1,
     borderColor: Colors.border,
   },
   choiceEmoji: {
-    fontSize: 48,
-    marginBottom: 12,
+    fontSize: 40,
+    marginBottom: 8,
   },
   choiceTitle: {
-    ...TextStyles.h4,
+    fontSize: 16,
+    fontWeight: '600',
     color: Colors.text,
-    marginBottom: 8,
+    marginBottom: 4,
     textAlign: 'center',
   },
   choiceDescription: {
-    ...TextStyles.bodySmall,
+    fontSize: 13,
+    fontWeight: '400',
     color: Colors.textSecondary,
-    marginBottom: 16,
+    marginBottom: 12,
     textAlign: 'center',
   },
   choiceButton: {
     alignSelf: 'stretch',
   },
   form: {
-    marginBottom: 24,
+    marginBottom: 20,
+    gap: 12,
   },
   inputGroup: {
-    marginBottom: 16,
+    gap: 6,
   },
   label: {
-    ...TextStyles.label,
+    fontSize: 13,
+    fontWeight: '500',
     color: Colors.text,
-    marginBottom: 8,
   },
   input: {
-    ...TextStyles.body,
+    fontSize: 16,
     backgroundColor: Colors.white,
     borderColor: Colors.border,
     borderWidth: 1,
     borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
     color: Colors.text,
+    minHeight: 48,
   },
   scanHint: {
     backgroundColor: Colors.primaryLight,
     borderRadius: 8,
     padding: 12,
-    marginTop: 8,
+    marginTop: 4,
   },
   scanHintText: {
-    ...TextStyles.bodySmall,
+    fontSize: 13,
+    fontWeight: '400',
     color: Colors.primaryDark,
   },
   button: {
-    marginBottom: 12,
+    marginBottom: 10,
   },
 });
