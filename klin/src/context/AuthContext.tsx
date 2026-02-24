@@ -1,13 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut as firebaseSignOut,
-  onAuthStateChanged,
-  updateProfile,
-} from 'firebase/auth';
-import { collection, doc, setDoc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../services/firebase';
+import { supabase } from '../services/supabase';
 import type { User } from '../types';
 
 interface AuthContextType {
@@ -27,35 +19,75 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Monitor auth state
+  // Monitor auth state on mount
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+    const initAuth = async () => {
       try {
-        if (firebaseUser) {
-          // Fetch user profile from Firestore
-          const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-          const userData = userDoc.data();
+        setLoading(true);
+        
+        // Get current session
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session?.user) {
+          // Fetch user profile from users table
+          const { data: profile, error: profileError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+
+          if (profileError && profileError.code !== 'PGRST116') {
+            throw profileError;
+          }
 
           setUser({
-            id: firebaseUser.uid,
-            email: firebaseUser.email || '',
-            name: firebaseUser.displayName || userData?.name || 'User',
-            avatar: userData?.avatar,
+            id: session.user.id,
+            email: session.user.email || '',
+            name: profile?.name || session.user.user_metadata?.name || 'User',
+            avatar: profile?.avatar,
             timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-            createdAt: new Date(firebaseUser.metadata.creationTime || Date.now()),
+            createdAt: new Date(session.user.created_at),
           });
         } else {
           setUser(null);
         }
       } catch (err) {
-        console.error('Auth state change error:', err);
+        console.error('Auth init error:', err);
         setError(err instanceof Error ? err.message : 'Auth error');
       } finally {
         setLoading(false);
       }
-    });
+    };
 
-    return unsubscribe;
+    initAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+
+          setUser({
+            id: session.user.id,
+            email: session.user.email || '',
+            name: profile?.name || session.user.user_metadata?.name || 'User',
+            avatar: profile?.avatar,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            createdAt: new Date(session.user.created_at),
+          });
+        } else {
+          setUser(null);
+        }
+      }
+    );
+
+    return () => {
+      subscription?.unsubscribe();
+    };
   }, []);
 
   const signUp = async (email: string, password: string, name: string) => {
@@ -63,23 +95,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setError(null);
       setLoading(true);
 
-      // Create auth user
-      const { user: firebaseUser } = await createUserWithEmailAndPassword(auth, email, password);
-
-      // Update profile
-      await updateProfile(firebaseUser, { displayName: name });
-
-      // Create user document in Firestore
-      const newUser: User = {
-        id: firebaseUser.uid,
+      // Sign up with Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
-        name,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        createdAt: new Date(),
-      };
+        password,
+        options: {
+          data: { name },
+        },
+      });
 
-      await setDoc(doc(db, 'users', firebaseUser.uid), newUser);
-      setUser(newUser);
+      if (authError) throw authError;
+
+      if (authData.user) {
+        // Create user profile in users table
+        const { error: profileError } = await supabase.from('users').insert({
+          id: authData.user.id,
+          email,
+          name,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          created_at: new Date(),
+        });
+
+        if (profileError) throw profileError;
+
+        setUser({
+          id: authData.user.id,
+          email,
+          name,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+          createdAt: new Date(),
+        });
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Sign up failed';
       setError(message);
@@ -93,7 +139,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setError(null);
       setLoading(true);
-      await signInWithEmailAndPassword(auth, email, password);
+
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Sign in failed';
       setError(message);
@@ -106,7 +158,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signOut = async () => {
     try {
       setError(null);
-      await firebaseSignOut(auth);
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
       setUser(null);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Sign out failed';

@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { collection, addDoc, query, where, getDocs, doc, setDoc } from 'firebase/firestore';
-import { db } from '../services/firebase';
+import { supabase } from '../services/supabase';
 import { useAuthContext } from '../context/AuthContext';
 import type { Household, HouseholdMember } from '../types';
 
@@ -17,24 +16,32 @@ export const useHousehold = () => {
       setError(null);
 
       // Create household
-      const householdRef = await addDoc(collection(db, 'households'), {
-        name,
-        createdAt: new Date(),
-        createdBy: user.id,
-      } as Household);
+      const { data: household, error: householdError } = await supabase
+        .from('households')
+        .insert({
+          name,
+          created_by: user.id,
+          created_at: new Date(),
+        })
+        .select()
+        .single();
+
+      if (householdError) throw householdError;
+      if (!household) throw new Error('Failed to create household');
 
       // Add user as admin member
-      await setDoc(doc(db, 'households', householdRef.id, 'members', user.id), {
-        householdId: householdRef.id,
-        userId: user.id,
-        role: 'admin',
-        joinedAt: new Date(),
-      } as HouseholdMember);
+      const { error: memberError } = await supabase
+        .from('household_members')
+        .insert({
+          household_id: household.id,
+          user_id: user.id,
+          role: 'admin',
+          joined_at: new Date(),
+        });
 
-      // Generate invite code (simple: first 6 chars of household ID)
-      const inviteCode = householdRef.id.substring(0, 8).toUpperCase();
+      if (memberError) throw memberError;
 
-      return householdRef.id;
+      return household.id;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to create household';
       setError(message);
@@ -51,31 +58,46 @@ export const useHousehold = () => {
       setLoading(true);
       setError(null);
 
-      // Find household by invite code (simplified: search first 8 chars)
-      const householdsRef = collection(db, 'households');
-      const q = query(householdsRef);
-      const snapshot = await getDocs(q);
+      // Find household by invite code (simple: household ID = invite code)
+      const { data: household, error: householdError } = await supabase
+        .from('households')
+        .select('id')
+        .eq('id', inviteCode.toUpperCase())
+        .single();
 
-      let householdId: string | null = null;
-      snapshot.forEach((doc) => {
-        if (doc.id.substring(0, 8).toUpperCase() === inviteCode.toUpperCase()) {
-          householdId = doc.id;
-        }
-      });
-
-      if (!householdId) {
+      if (householdError) {
         throw new Error('Invalid invite code');
       }
 
-      // Add user as member
-      await setDoc(doc(db, 'households', householdId, 'members', user.id), {
-        householdId,
-        userId: user.id,
-        role: 'member',
-        joinedAt: new Date(),
-      } as HouseholdMember);
+      if (!household) {
+        throw new Error('Household not found');
+      }
 
-      return householdId;
+      // Check if user is already a member
+      const { data: existingMember } = await supabase
+        .from('household_members')
+        .select('id')
+        .eq('household_id', household.id)
+        .eq('user_id', user.id)
+        .single();
+
+      if (existingMember) {
+        throw new Error('You are already a member of this household');
+      }
+
+      // Add user as member
+      const { error: memberError } = await supabase
+        .from('household_members')
+        .insert({
+          household_id: household.id,
+          user_id: user.id,
+          role: 'member',
+          joined_at: new Date(),
+        });
+
+      if (memberError) throw memberError;
+
+      return household.id;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to join household';
       setError(message);
