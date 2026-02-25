@@ -4,3 +4,6 @@ export { OnboardingScreen } from './OnboardingScreen';
 export { DashboardScreen } from './DashboardScreen';
 export { AuthNavigator } from './AuthNavigator';
 export { AppNavigator } from './AppNavigator';
+export { TaskListScreen } from './TaskListScreen';
+export { CreateTaskScreen } from './CreateTaskScreen';
+export { MarkDoneScreen } from './MarkDoneScreen';
