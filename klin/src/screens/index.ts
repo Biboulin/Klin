@@ -8,3 +8,4 @@ export { MainAppNavigator } from './MainAppNavigator';
 export { TaskListScreen } from './TaskListScreen';
 export { CreateTaskScreen } from './CreateTaskScreen';
 export { MarkDoneScreen } from './MarkDoneScreen';
+export { LeaderboardScreen } from './LeaderboardScreen';
