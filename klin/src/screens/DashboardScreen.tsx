@@ -6,9 +6,10 @@ import { Colors } from '../constants';
 
 interface DashboardScreenProps {
   onLogOut?: () => Promise<void>;
+  onViewTasks?: () => void;
 }
 
-export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onLogOut }) => {
+export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onLogOut, onViewTasks }) => {
   const { user, signOut } = useAuthContext();
   const [loading, setLoading] = React.useState(false);
 
@@ -85,6 +86,15 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onLogOut }) =>
         <Text style={styles.infoTitle}>Compte</Text>
         <Text style={styles.infoEmail}>{user?.email}</Text>
       </View>
+
+      {/* View Tasks Button */}
+      <Button
+        title="Voir les tâches"
+        onPress={onViewTasks}
+        variant="primary"
+        size="lg"
+        style={styles.taskButton}
+      />
 
       {/* Sign Out Button */}
       <Button
@@ -229,6 +239,9 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '500',
     color: Colors.text,
+  },
+  taskButton: {
+    marginBottom: 12,
   },
   signOutButton: {
     marginBottom: 12,

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { DashboardScreen } from './DashboardScreen';
+import { MainAppNavigator } from './MainAppNavigator';
 import { AuthNavigator } from './AuthNavigator';
 import { useAuthContext } from '../context/AuthContext';
 import { Colors } from '../constants';
@@ -8,6 +8,7 @@ import { Colors } from '../constants';
 export const AppNavigator: React.FC = () => {
   const { user, loading } = useAuthContext();
   const [householdCreated, setHouseholdCreated] = useState(false);
+  const [householdId, setHouseholdId] = useState<string | null>(null);
 
   if (loading) {
     return (
@@ -21,8 +22,9 @@ export const AppNavigator: React.FC = () => {
   if (!user || !householdCreated) {
     return (
       <AuthNavigator
-        onOnboardingComplete={() => {
+        onOnboardingComplete={(hId) => {
           setHouseholdCreated(true);
+          setHouseholdId(hId || null);
         }}
       />
     );
@@ -30,9 +32,11 @@ export const AppNavigator: React.FC = () => {
 
   // Authenticated and household created
   return (
-    <DashboardScreen
+    <MainAppNavigator
+      householdId={householdId}
       onLogOut={() => {
         setHouseholdCreated(false);
+        setHouseholdId(null);
       }}
     />
   );

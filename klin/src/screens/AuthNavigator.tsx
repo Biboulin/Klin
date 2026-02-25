@@ -8,7 +8,7 @@ import { Colors } from '../constants';
 type AuthMode = 'signIn' | 'signUp' | 'onboarding';
 
 interface AuthNavigatorProps {
-  onOnboardingComplete?: () => void;
+  onOnboardingComplete?: (householdId: string) => void;
 }
 
 export const AuthNavigator: React.FC<AuthNavigatorProps> = ({ onOnboardingComplete }) => {
@@ -30,12 +30,12 @@ export const AuthNavigator: React.FC<AuthNavigatorProps> = ({ onOnboardingComple
     return (
       <OnboardingScreen
         onCreateHousehold={async (name) => {
-          await createHousehold(name);
-          onOnboardingComplete?.();
+          const hId = await createHousehold(name);
+          onOnboardingComplete?.(hId);
         }}
         onJoinHousehold={async (code) => {
-          await joinHousehold(code);
-          onOnboardingComplete?.();
+          const hId = await joinHousehold(code);
+          onOnboardingComplete?.(hId);
         }}
         loading={householdLoading}
       />
