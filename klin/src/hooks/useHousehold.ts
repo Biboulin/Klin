@@ -26,7 +26,10 @@ export const useHousehold = () => {
         .select()
         .single();
 
-      if (householdError) throw householdError;
+      if (householdError) {
+        console.error('Household creation error:', householdError);
+        throw new Error(householdError.message || 'Failed to create household');
+      }
       if (!household) throw new Error('Failed to create household');
 
       // Add user as admin member
@@ -39,11 +42,15 @@ export const useHousehold = () => {
           joined_at: new Date(),
         });
 
-      if (memberError) throw memberError;
+      if (memberError) {
+        console.error('Member creation error:', memberError);
+        throw new Error(memberError.message || 'Failed to add member');
+      }
 
       return household.id;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to create household';
+      console.error('createHousehold error:', message);
       setError(message);
       throw err;
     } finally {

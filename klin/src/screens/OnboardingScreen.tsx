@@ -37,7 +37,8 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
     try {
       await onCreateHousehold(householdName);
     } catch (err) {
-      Alert.alert('Erreur', 'Impossible de créer le foyer');
+      const errorMsg = err instanceof Error ? err.message : 'Impossible de créer le foyer';
+      Alert.alert('Erreur', errorMsg);
     }
   };
 
