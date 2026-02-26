@@ -95,6 +95,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setError(null);
       setLoading(true);
 
+      console.log('[AUTH] Starting signup for:', email);
+
       // Sign up with Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
@@ -104,10 +106,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         },
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        console.error('[AUTH] Auth signup error:', authError);
+        throw authError;
+      }
+
+      console.log('[AUTH] Auth signup success, user ID:', authData.user?.id);
 
       if (authData.user) {
         // Create user profile in users table
+        console.log('[AUTH] Creating user profile...');
         const { error: profileError } = await supabase.from('users').insert({
           id: authData.user.id,
           email,
@@ -116,7 +124,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           created_at: new Date(),
         });
 
-        if (profileError) throw profileError;
+        if (profileError) {
+          console.error('[AUTH] Profile creation error:', profileError);
+          throw new Error(`Profile creation failed: ${profileError.message || JSON.stringify(profileError)}`);
+        }
+
+        console.log('[AUTH] Profile created successfully');
 
         setUser({
           id: authData.user.id,
@@ -128,6 +141,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Sign up failed';
+      console.error('[AUTH] SignUp error:', message, err);
       setError(message);
       throw err;
     } finally {

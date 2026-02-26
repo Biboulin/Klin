@@ -50,7 +50,9 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSuccess, onToggleM
       await signUp(email, password, name);
       onSuccess?.();
     } catch (err) {
-      Alert.alert('Erreur', error || 'Veuillez réessayer');
+      const errorMsg = err instanceof Error ? err.message : error || 'Veuillez réessayer';
+      console.error('[SIGNUP] Error:', errorMsg);
+      Alert.alert('Erreur', errorMsg);
     }
   };
 
