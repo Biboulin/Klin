@@ -1,7 +1,9 @@
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import RootApp from './index';
+import { NavigationContainer } from '@react-navigation/native';
+import { AuthProvider } from '../src/context/AuthContext';
+import { AppNavigator } from '../src/screens/AppNavigator';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -22,5 +24,11 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootApp />;
+  return (
+    <NavigationContainer>
+      <AuthProvider>
+        <AppNavigator />
+      </AuthProvider>
+    </NavigationContainer>
+  );
 }
