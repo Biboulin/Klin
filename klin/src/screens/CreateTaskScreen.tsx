@@ -14,20 +14,15 @@ import { Button } from '../components/Button';
 import { Colors } from '../constants';
 import { CORE_TASKS } from '../constants';
 import { useTask } from '../hooks/useTask';
-
-interface CreateTaskScreenProps {
-  householdId: string | null;
-  onSuccess: () => void;
-  onCancel: () => void;
-}
+import type { ScreenProps } from './MainAppNavigator';
 
 type Recurrence = 'daily' | 'weekly' | 'oneoff';
 
-export const CreateTaskScreen: React.FC<CreateTaskScreenProps> = ({
-  householdId,
-  onSuccess,
-  onCancel,
+export const CreateTaskScreen: React.FC<ScreenProps<'CreateTask'>> = ({
+  navigation,
+  route,
 }) => {
+  const { householdId } = route.params;
   const { createTask, loading } = useTask(householdId);
   const [title, setTitle] = useState('');
   const [recurrence, setRecurrence] = useState<Recurrence>('weekly');
@@ -49,7 +44,7 @@ export const CreateTaskScreen: React.FC<CreateTaskScreenProps> = ({
         selectedEmoji
       );
       Alert.alert('Succès', 'Tâche créée!');
-      onSuccess();
+      navigation.goBack();
     } catch (err) {
       Alert.alert('Erreur', 'Impossible de créer la tâche');
     }
@@ -159,7 +154,7 @@ export const CreateTaskScreen: React.FC<CreateTaskScreenProps> = ({
           />
           <Button
             title="Annuler"
-            onPress={onCancel}
+            onPress={() => navigation.goBack()}
             variant="secondary"
             size="lg"
           />

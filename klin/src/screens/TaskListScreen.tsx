@@ -12,20 +12,15 @@ import { Button } from '../components/Button';
 import { Colors } from '../constants';
 import { useTask } from '../hooks/useTask';
 import type { TaskInstance } from '../types';
-
-interface TaskListScreenProps {
-  householdId: string | null;
-  onCreateTask: () => void;
-  onTaskPress: (task: TaskInstance) => void;
-}
+import type { ScreenProps } from './MainAppNavigator';
 
 type ViewMode = 'today' | 'week';
 
-export const TaskListScreen: React.FC<TaskListScreenProps> = ({
-  householdId,
-  onCreateTask,
-  onTaskPress,
+export const TaskListScreen: React.FC<ScreenProps<'TaskList'>> = ({
+  navigation,
+  route,
 }) => {
+  const { householdId } = route.params;
   const { getTodayTasks, getTaskInstances, loading } = useTask(householdId);
   const [viewMode, setViewMode] = useState<ViewMode>('today');
   const [tasks, setTasks] = useState<TaskInstance[]>([]);
@@ -73,7 +68,7 @@ export const TaskListScreen: React.FC<TaskListScreenProps> = ({
         </View>
         <Button
           title="Ajouter"
-          onPress={onCreateTask}
+          onPress={() => navigation.navigate('CreateTask', { householdId })}
           variant="primary"
           size="sm"
         />
@@ -145,7 +140,7 @@ export const TaskListScreen: React.FC<TaskListScreenProps> = ({
               completed={!!task.completed_at}
               completedAt={task.completed_at ? new Date(task.completed_at) : undefined}
               dueDate={new Date(task.due_date)}
-              onPress={() => onTaskPress(task)}
+              onPress={() => navigation.navigate('MarkDone', { householdId, task })}
             />
           ))
         )}

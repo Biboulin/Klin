@@ -3,22 +3,20 @@ import { StyleSheet, View, Text, ScrollView, Alert } from 'react-native';
 import { useAuthContext } from '../context/AuthContext';
 import { Button } from '../components/Button';
 import { Colors } from '../constants';
+import type { ScreenProps } from './MainAppNavigator';
 
-interface DashboardScreenProps {
-  onLogOut?: () => Promise<void>;
-  onViewTasks?: () => void;
-}
-
-export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onLogOut, onViewTasks }) => {
+export const DashboardScreen: React.FC<ScreenProps<'Dashboard'>> = ({ navigation, route }) => {
   const { user, signOut } = useAuthContext();
   const [loading, setLoading] = React.useState(false);
+  const { householdId, onLogOut } = route.params;
 
   const handleLogOut = async () => {
     setLoading(true);
     try {
       await signOut();
-      onLogOut?.();
+      await onLogOut?.();
     } catch (err) {
+      console.error('Logout error:', err);
       Alert.alert('Erreur', 'Impossible de se déconnecter');
       setLoading(false);
     }
@@ -90,7 +88,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({ onLogOut, onVi
       {/* View Tasks Button */}
       <Button
         title="Voir les tâches"
-        onPress={onViewTasks}
+        onPress={() => navigation.navigate('TaskList', { householdId })}
         variant="primary"
         size="lg"
         style={styles.taskButton}

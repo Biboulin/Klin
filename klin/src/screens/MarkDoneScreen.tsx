@@ -11,19 +11,14 @@ import { Button } from '../components/Button';
 import { Colors } from '../constants';
 import { useTask } from '../hooks/useTask';
 import type { TaskInstance } from '../types';
+import type { ScreenProps } from './MainAppNavigator';
 
-interface MarkDoneScreenProps {
-  task: TaskInstance;
-  onSuccess: () => void;
-  onCancel: () => void;
-}
-
-export const MarkDoneScreen: React.FC<MarkDoneScreenProps> = ({
-  task,
-  onSuccess,
-  onCancel,
+export const MarkDoneScreen: React.FC<ScreenProps<'MarkDone'>> = ({
+  navigation,
+  route,
 }) => {
-  const { completeTaskInstance, loading } = useTask(null);
+  const { householdId, task } = route.params;
+  const { completeTaskInstance, loading } = useTask(householdId);
   const [addPhoto, setAddPhoto] = useState(false);
   const [photoUri, setPhotoUri] = useState<string | null>(null);
 
@@ -31,7 +26,7 @@ export const MarkDoneScreen: React.FC<MarkDoneScreenProps> = ({
     try {
       await completeTaskInstance(task.id, photoUri || undefined);
       Alert.alert('Bravo! 🎉', 'Tâche marquée comme complétée!');
-      onSuccess();
+      navigation.goBack();
     } catch (err) {
       Alert.alert('Erreur', 'Impossible de marquer comme complétée');
     }
@@ -100,7 +95,7 @@ export const MarkDoneScreen: React.FC<MarkDoneScreenProps> = ({
         />
         <Button
           title="Annuler"
-          onPress={onCancel}
+          onPress={() => navigation.goBack()}
           variant="secondary"
           size="lg"
         />
