@@ -7,16 +7,16 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button } from '../components/Button';
 import { Colors } from '../constants';
 import { useTask } from '../hooks/useTask';
 import type { TaskInstance } from '../types';
-import type { ScreenProps } from './MainAppNavigator';
+import type { RootStackParamList } from './AppNavigator';
 
-export const MarkDoneScreen: React.FC<ScreenProps<'MarkDone'>> = ({
-  navigation,
-  route,
-}) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'MarkDone'>;
+
+export const MarkDoneScreen: React.FC<Props> = ({ navigation, route }) => {
   const { householdId, task } = route.params;
   const { completeTaskInstance, loading } = useTask(householdId);
   const [addPhoto, setAddPhoto] = useState(false);

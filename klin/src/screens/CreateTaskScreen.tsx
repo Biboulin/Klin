@@ -10,18 +10,17 @@ import {
   Platform,
   Alert,
 } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Button } from '../components/Button';
 import { Colors } from '../constants';
 import { CORE_TASKS } from '../constants';
 import { useTask } from '../hooks/useTask';
-import type { ScreenProps } from './MainAppNavigator';
+import type { RootStackParamList } from './AppNavigator';
 
+type Props = NativeStackScreenProps<RootStackParamList, 'CreateTask'>;
 type Recurrence = 'daily' | 'weekly' | 'oneoff';
 
-export const CreateTaskScreen: React.FC<ScreenProps<'CreateTask'>> = ({
-  navigation,
-  route,
-}) => {
+export const CreateTaskScreen: React.FC<Props> = ({ navigation, route }) => {
   const { householdId } = route.params;
   const { createTask, loading } = useTask(householdId);
   const [title, setTitle] = useState('');

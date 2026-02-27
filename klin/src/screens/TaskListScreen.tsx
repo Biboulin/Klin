@@ -7,19 +7,18 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { TaskCard } from '../components/TaskCard';
 import { Button } from '../components/Button';
 import { Colors } from '../constants';
 import { useTask } from '../hooks/useTask';
 import type { TaskInstance } from '../types';
-import type { ScreenProps } from './MainAppNavigator';
+import type { RootStackParamList } from './AppNavigator';
 
+type Props = NativeStackScreenProps<RootStackParamList, 'TaskList'>;
 type ViewMode = 'today' | 'week';
 
-export const TaskListScreen: React.FC<ScreenProps<'TaskList'>> = ({
-  navigation,
-  route,
-}) => {
+export const TaskListScreen: React.FC<Props> = ({ navigation, route }) => {
   const { householdId } = route.params;
   const { getTodayTasks, getTaskInstances, loading } = useTask(householdId);
   const [viewMode, setViewMode] = useState<ViewMode>('today');

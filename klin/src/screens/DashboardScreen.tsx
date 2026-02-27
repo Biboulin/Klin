@@ -1,11 +1,14 @@
 import React from 'react';
 import { StyleSheet, View, Text, ScrollView, Alert } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useAuthContext } from '../context/AuthContext';
 import { Button } from '../components/Button';
 import { Colors } from '../constants';
-import type { ScreenProps } from './MainAppNavigator';
+import type { RootStackParamList } from './AppNavigator';
 
-export const DashboardScreen: React.FC<ScreenProps<'Dashboard'>> = ({ navigation, route }) => {
+type Props = NativeStackScreenProps<RootStackParamList, 'Dashboard'>;
+
+export const DashboardScreen: React.FC<Props> = ({ navigation, route }) => {
   const { user, signOut } = useAuthContext();
   const [loading, setLoading] = React.useState(false);
   const { householdId, onLogOut } = route.params;

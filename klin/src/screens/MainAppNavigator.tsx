@@ -1,5 +1,4 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationProp, StackScreenProps } from '@react-navigation/stack';
 import { DashboardScreen } from './DashboardScreen';
 import { TaskListScreen } from './TaskListScreen';
@@ -34,8 +33,7 @@ export const MainAppNavigator: React.FC<MainAppNavigatorProps> = ({
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
+    <Stack.Navigator
         screenOptions={{
           headerStyle: {
             backgroundColor: Colors.background,
@@ -89,6 +87,5 @@ export const MainAppNavigator: React.FC<MainAppNavigatorProps> = ({
           component={MarkDoneScreen}
         />
       </Stack.Navigator>
-    </NavigationContainer>
   );
 };

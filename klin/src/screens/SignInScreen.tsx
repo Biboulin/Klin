@@ -12,13 +12,14 @@ import {
 import { useAuthContext } from '../context/AuthContext';
 import { Button } from '../components/Button';
 import { Colors, TextStyles } from '../constants';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from './AppNavigator';
 
-interface SignInScreenProps {
-  onSuccess?: () => void;
-  onToggleMode?: () => void;
-}
+type SignInNavigationProp = NativeStackNavigationProp<RootStackParamList, 'SignIn'>;
 
-export const SignInScreen: React.FC<SignInScreenProps> = ({ onSuccess, onToggleMode }) => {
+export const SignInScreen: React.FC = () => {
+  const navigation = useNavigation<SignInNavigationProp>();
   const { signIn, loading, error } = useAuthContext();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,7 +36,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ onSuccess, onToggleM
 
     try {
       await signIn(email, password);
-      onSuccess?.();
+      navigation.navigate('Onboarding');
     } catch (err) {
       Alert.alert('Erreur', error || 'Veuillez réessayer');
     }
@@ -113,7 +114,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ onSuccess, onToggleM
           <Text style={styles.toggleText}>Pas de compte? </Text>
           <Text
             style={[styles.toggleText, styles.toggleLink]}
-            onPress={onToggleMode}
+            onPress={() => navigation.navigate('SignUp')}
           >
             Créer un compte
           </Text>

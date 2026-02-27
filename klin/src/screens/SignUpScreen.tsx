@@ -13,15 +13,16 @@ import {
 import { useAuthContext } from '../context/AuthContext';
 import { Button } from '../components/Button';
 import { Colors, TextStyles } from '../constants';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from './AppNavigator';
 
 const { height: screenHeight } = Dimensions.get('window');
 
-interface SignUpScreenProps {
-  onSuccess?: () => void;
-  onToggleMode?: () => void;
-}
+type SignUpNavigationProp = NativeStackNavigationProp<RootStackParamList, 'SignUp'>;
 
-export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSuccess, onToggleMode }) => {
+export const SignUpScreen: React.FC = () => {
+  const navigation = useNavigation<SignUpNavigationProp>();
   const { signUp, loading, error } = useAuthContext();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -48,7 +49,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSuccess, onToggleM
 
     try {
       await signUp(email, password, name);
-      onSuccess?.();
+      navigation.navigate('Onboarding');
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : error || 'Veuillez réessayer';
       console.error('[SIGNUP] Error:', errorMsg);
@@ -156,7 +157,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ onSuccess, onToggleM
           <Text style={styles.toggleText}>Vous avez un compte? </Text>
           <Text
             style={[styles.toggleText, styles.toggleLink]}
-            onPress={onToggleMode}
+            onPress={() => navigation.navigate('SignIn')}
           >
             Se connecter
           </Text>
