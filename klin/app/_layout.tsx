@@ -1,8 +1,7 @@
-import { Stack } from 'expo-router';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { Colors } from '../src/constants';
+import RootApp from './index';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -23,17 +22,5 @@ export default function RootLayout() {
     return null;
   }
 
-  return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        animationEnabled: true,
-        cardStyle: {
-          backgroundColor: Colors.background,
-        },
-      }}
-    >
-      <Stack.Screen name="index" />
-    </Stack>
-  );
+  return <RootApp />;
 }
